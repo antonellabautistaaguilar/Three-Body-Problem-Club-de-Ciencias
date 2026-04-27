@@ -1,3 +1,18 @@
+import matplotlib.pyplot as plt
+
+def fuerza_gravitacional(masa1, masa2, distancia):
+    G = 6.67430e-11  # Constante gravitacional
+    # Completa la fórmula de fuerza gravitacional
+    F = (-G*(masa1*masa2))/distancia**2
+    return F
+fuerza = fuerza_gravitacional(5.97e24, 7.35e22, 384400e3)
+print(f"La fuerza gravitacional entre la Tierra y la Luna es {fuerza} N")
+
+def energia_cinetica(masa, velocidad):
+    return 0.5 * masa * velocidad**2
+
+energia = energia_cinetica(1000, 20)
+
 masa1 = 5.97e24  # Masa de la Tierra en kg
 masa2 = 7.35e22  # Masa de la Luna en kg
 posicion1 = [0, 0]  # Posición inicial de la Tierra
@@ -24,8 +39,6 @@ velocidad2 = [0, 1022]  # Velocidad inicial de la Luna
     a1 = [f / masa1 for f in f12]
     a2 = [f / masa2 for f in f21]
     return v1 + v2 + a1 + a2
-
-import matplotlib.pyplot as plt
 
 masa1 = 5.97e24  # Masa de la Tierra en kg
 masa2 = 7.35e22  # Masa de la Luna en kg
