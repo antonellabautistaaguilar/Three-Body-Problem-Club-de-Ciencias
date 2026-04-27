@@ -1,0 +1,80 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time as tm
+
+Earth = np.array([0,0])
+
+x = np.linspace(-1,1,10)
+y = np.sqrt(1-x**2)
+y1 = -np.sqrt(1-x**2)
+
+def update(num, x, y, line):
+    line.set_data(x[:num], y[:num])
+    return line,
+
+
+t = 0
+for i in x:
+  value = i
+  plt.plot(value,y[t],marker=".")
+  t = t+1
+
+t=0
+for i in x:
+  value = i
+  plt.plot(value,y1[t],marker=".")
+  t = t+1
+
+plt.plot(Earth[0],Earth[1],marker=".")
+ [<matplotlib.lines.Line2D at 0x7f770d6de320>]
+
+#the code calculates the varycenter
+import numpy as np
+import matplotlib.pyplot as plt
+
+#Mass
+Earth_mass = 5.972*10**24
+Moon_mass = 7.4*10**22
+
+
+#Positions
+Earth_position = np.array([0,0])
+Moon_position  = np.array([384400*10**3,0])
+
+
+#Barycenter position
+
+r_positionx     = (Earth_mass*Earth_position[0])/(Earth_mass+Moon_mass) +  (Moon_mass*Moon_position[0])/(Earth_mass+Moon_mass)
+r_positiony     = (Earth_mass*Earth_position[1])/(Earth_mass+Moon_mass) +  (Moon_mass*Moon_position[1])/(Earth_mass+Moon_mass)
+
+#Graph
+plt.plot(Earth_position[0],Earth_position[1],marker=".",color='blue')
+plt.plot(Moon_position[0],Moon_position[1],marker=".",color='grey')
+plt.plot(r_positionx,r_positiony ,marker=".",color='red')
+
+#Distance from barycenter
+r_distance = np.sqrt((Earth_position[0]-r_positionx)**2 + (Earth_position[1]-r_positiony)**2)
+print('Barycenter position:',r_distance/10**3,"km")
+
+#Find r
+
+r = np.array([Earth_position[0]-Moon_position[0],Earth_position[1]-Moon_position[1]])
+ Barycenter position: 4704.86271915316 km
+
+https://colab.research.google.com/drive/1K1aVWw9SD-92av_VmdUaYoGvplo-xTok#scrollTo=nUS-uLCbztZ7&line=7&uniqifier=1
+
+#Euler method
+def euler(f,h,y,t):
+  while i == t:
+    y_new = y+h*(f(t,y))
+    y_new =y
+    return
+euler(5**t+3*t,0.01,0,1)
+
+def runge(f,t,y,h)
+  k1 = f(t,y)
+  k2 = f(t+h/2,y+h/2*k1)
+  k3 = f(t+h/2,y+h/2*k2)
+  k4 = f(t+h/2,y+h/2*k3)
+  return y+h/6*(k1+2*k2+2*k3+k4)
