@@ -1,0 +1,86 @@
+masa1 = 5.97e24  # Masa de la Tierra en kg
+masa2 = 7.35e22  # Masa de la Luna en kg
+posicion1 = [0, 0]  # Posición inicial de la Tierra
+posicion2 = [384400e3, 0]  # Posición inicial de la Luna
+velocidad1 = [0, 0]  # Velocidad inicial de la Tierra
+velocidad2 = [0, 1022]  # Velocidad inicial de la Luna
+
+
+    G = 6.67430e-11  # Constante gravitacional
+    distancia = ((r2[0] - r1[0])**2 + (r2[1] - r1[1])**2)**0.5
+    fuerza_magnitud = G * m1 * m2 / distancia**2
+    fuerza_direccion = [(r2[i] - r1[i]) / distancia for i in range(len(r1))]
+    return [fuerza_magnitud * fuerza_direccion[i] for i in range(len(r1))]
+
+    k1 = f(y, t)
+    k2 = f([y[i] + 0.5 * dt * k1[i] for i in range(len(y))], t + 0.5 * dt)
+    k3 = f([y[i] + 0.5 * dt * k2[i] for i in range(len(y))], t + 0.5 * dt)
+    k4 = f([y[i] + dt * k3[i] for i in range(len(y))], t + dt)
+    return [y[i] + (dt / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(len(y))]
+
+    r1, r2, v1, v2 = y[:2], y[2:4], y[4:6], y[6:8]
+    f12 = fuerza_gravitacional(masa1, masa2, r1, r2)
+    f21 = [-f for f in f12]
+    a1 = [f / masa1 for f in f12]
+    a2 = [f / masa2 for f in f21]
+    return v1 + v2 + a1 + a2
+
+import matplotlib.pyplot as plt
+
+masa1 = 5.97e24  # Masa de la Tierra en kg
+masa2 = 7.35e22  # Masa de la Luna en kg
+posicion1 = [0, 0]  # Posición inicial de la Tierra
+posicion2 = [384400e3, 0]  # Posición inicial de la Luna
+velocidad1 = [0, 0]  # Velocidad inicial de la Tierra
+velocidad2 = [0, 1022]  # Velocidad inicial de la Luna
+
+def fuerza_gravitacional(m1, m2, r1, r2):
+    G = 6.67430e-11  # Constante gravitacional
+    distancia = ((r2[0] - r1[0])**2 + (r2[1] - r1[1])**2)**0.5
+    fuerza_magnitud = G * m1 * m2 / distancia**2
+    fuerza_direccion = [(r2[i] - r1[i]) / distancia for i in range(len(r1))]
+    return [fuerza_magnitud * fuerza_direccion[i] for i in range(len(r1))]
+
+def rk4_step(f, y, t, dt):
+    k1 = f(y, t)
+    k2 = f([y[i] + 0.5 * dt * k1[i] for i in range(len(y))], t + 0.5 * dt)
+    k3 = f([y[i] + 0.5 * dt * k2[i] for i in range(len(y))], t + 0.5 * dt)
+    k4 = f([y[i] + dt * k3[i] for i in range(len(y))], t + dt)
+    return [y[i] + (dt / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(len(y))]
+
+def derivada(y, t):
+    r1, r2, v1, v2 = y[:2], y[2:4], y[4:6], y[6:8]
+    f12 = fuerza_gravitacional(masa1, masa2, r1, r2)
+    f21 = [-f for f in f12]
+    a1 = [f / masa1 for f in f12]
+    a2 = [f / masa2 for f in f21]
+    return v1 + v2 + a1 + a2
+
+y0 = posicion1 + posicion2 + velocidad1 + velocidad2
+t0 = 0
+dt = 3600  # Un paso de tiempo de una hora
+num_steps = 8766  # Número de pasos de tiempo
+
+resultados = []
+tiempos = []
+
+for step in range(num_steps):
+    y0 = rk4_step(derivada, y0, t0, dt)
+    t0 += dt
+    resultados.append(y0)
+    tiempos.append(t0)
+
+posiciones_tierra = [resultado[:2] for resultado in resultados]
+posiciones_luna = [resultado[2:4] for resultado in resultados]
+
+x_tierra, y_tierra = zip(*posiciones_tierra)
+x_luna, y_luna = zip(*posiciones_luna)
+
+plt.plot(x_tierra, y_tierra, label="Tierra")
+plt.plot(x_luna, y_luna, label="Luna")
+plt.xlabel("X (m)")
+plt.ylabel("Y (m)")
+plt.legend()
+plt.title("Trayectorias de la Tierra y la Luna")
+plt.show()
+
