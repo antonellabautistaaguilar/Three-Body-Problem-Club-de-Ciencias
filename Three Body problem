@@ -1,0 +1,66 @@
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constantes para el sistema Tierra-Luna
+mu = 0.012150585609624  # Relación de masas para el sistema Tierra-Luna
+
+# Condiciones iniciales actualizadas (unidades adimensionales) https://ssd.jpl.nasa.gov/tools/periodic_orbits.html
+initial_conditions = np.array([12.3690888734309465E-1,2.6569853876973453E-29,-6.5553023513506719E-32,6.0314258522129136E-16,5.2232242080210143E-5,5.1825223150917431E-31])
+
+# Ecuaciones del movimiento para el CR3BP
+def cr3bp_equations(state, mu):
+    x, y, z, dx, dy, dz = state
+    r1 = np.sqrt((x + mu)**2 + y**2 + z**2)
+    r2 = np.sqrt((x - (1 - mu))**2 + y**2 + z**2)
+#Aquí van las EdM ndCR3BP
+    ddx =2*dy+x-((1-mu)/r1**3)*(x+mu)-(mu/r2**3)*(x-1+mu)
+    ddy =-2*dx+y-((1-mu)/r1**3)*y-(mu/r2**3)*y
+    ddz =-((1-mu)/r1**3)*z-(mu/r2**3)*z
+
+    return np.array([dx, dy, dz, ddx, ddy, ddz])
+
+# Método RK4 para resolver EDO
+def rk4_step(f, state, dt, mu):
+#Aquí va RK4
+  k1 = f(state,mu)
+  k2 = f(state+dt/2*k1,mu)
+  k3 = f(state+dt/2*k2,mu)
+  k4 = f(state+dt*k3,mu)
+  return state+dt/6*(k1+2*k2+2*k3+k4)
+
+
+# Parámetros de tiempo
+t0 = 0.0
+tf = 100.0
+dt = 0.001
+time_points = np.arange(t0, tf + dt, dt)
+
+# Inicializar arrays para guardar los resultados
+states = np.zeros((len(time_points), 6))
+states[0] = initial_conditions
+
+# Realizar la integración usando RK4
+for i in range(1, len(time_points)):
+    states[i] = rk4_step(cr3bp_equations, states[i-1], dt, mu)
+
+# Extraer posiciones y velocidades
+x, y, z, dx, dy, dz = states.T
+
+# Calcular la constante de Jacobi
+r1 = np.sqrt((x + mu)**2 + y**2 + z**2)
+r2 = np.sqrt((x - (1 - mu))**2 + y**2 + z**2)
+#Aquí va la constante de Jacobi
+C_J= (x**2+y**2)+2*(1-mu)/r1+(2*mu)/r2-(dx**2+dy**2+dz**2)
+# Graficar la trayectoria en 3D
+fig =plt.figure()
+graph = fig.add_subplot(111, projection='3d')
+graph.plot(x,y,z)
+
+# Graficar la constante de Jacobi a lo largo del tiempo
+fig2 = plt.figure()
+graph2 = fig2.add_subplot(111)
+graph2.plot(time_points,C_J)
+plt.title('Jacobian')
+plt.xlabel('Time')
+
